@@ -21,6 +21,9 @@ and open the template in the editor.
         <div id="toolbar"></div>
         <script>
             var visor = new Cesium.Viewer("cesiumContainer");
+            var matrizColores = {};
+            
+            agregarGeojson('mapF.geojson',true);
             
             function agregarGeojson(archivo,zoom) {
                 var miDataSource = new Cesium.GeoJsonDataSource();
@@ -48,9 +51,11 @@ and open the template in the editor.
                                 miEntidad.polygon.material = color;
                                 miEntidad.polygon.outline = false;
                                 
-                                var posicion = miEntidad.polygon.hierachy.getValue().positions[0];
+                                
+                                var posicion = miEntidad.polygon.hierarchy.getValue().positions[0];
                                 miEntidad.polygon.height =0;
-                                miEntidad.polygon.extrudeHeight = miEntidad.properties.altura; 
+                                miEntidad.polygon.extrudedHeight = altura; 
+                                
                         }    
                 }).otherwise(function (error){
                    console.error(error);
@@ -58,36 +63,7 @@ and open the template in the editor.
                 });    
             }
             
-            var carga = false;
-            var pancarta = document.getElementById('toolbar');
-            var cartographic = new Cesium.Cartographic();
-            
-            visor.clock.onTick.addEventListener(function(clock) {
-                var miEntidad = visor.selectedEntity;
-                if (!Cesium.defined(miEntidad)) {
-                    pancarta.style.display = 'none';
-                } else {
-                    pancarta.style.display = 'block';
-                    
-                    if(miEntidad.position !== null && miEntidad.position !== undefined){
-                    var position = miEntidad.position.getValue(clock.currentTime);
-                    Cesium.Ellipsoid.WGS84.cartesianToCartographic(position, cartographic);
-                    pancarta.innerHTML =
-                        'Longitud: ' + Cesium.Math.toDegrees(cartographic.longitude).toFixed(3) + ' <br/>' +
-                        'Latitud: ' + Cesium.Math.toDegrees(cartographic.latitude).toFixed(3) + ' <br/>' +
-                        'Altura: ' + (cartographic.height * 0.001) + ' km' + ' <br/>' +
-                        'Tiempo Actual: ' + visor.clock.currentTime + '<br>';
-                    }
-                }
-                //Cargar un geoJSON en un momento dado
-                if(Cesium.JulianDate.secondsDifference(visor.clock.currentTime,visor.clock.startTime)>13 && carga==false){
-                     agregarGeojson('mapF.geojson',false);
-                     carga=true;
-                }
-                
-            });
-            
-            agregarGeojson('mapF.geojson',true);
+           
             
         </script>
     </body>
